@@ -1,7 +1,7 @@
 
 # Maintainer: Juan Toca <elan17.programacion@gmail.com>
 pkgname=terminal-backgrounds-git
-pkgver=r43.d467734
+pkgver=r4.f88e969
 pkgrel=1
 pkgdesc="Snake-based ZPG game"
 arch=('any')
@@ -16,7 +16,7 @@ replaces=()
 backup=()
 options=(!emptydirs)
 install=
-source=('snakes-git::git+https://github.com/elan17/Terminal-backgrounds#branch=master')
+source=('terminal-backgrounds-git::git+https://github.com/elan17/Terminal-backgrounds#branch=master')
 noextract=()
 md5sums=('SKIP')
 
@@ -28,5 +28,5 @@ pkgver() {
 package() {
 	cd "$srcdir/$pkgname"
   	install -Dm 755 ./snakes/snakes.py "${pkgdir}/usr/bin/snakes"
-  	install -Dm 644 ./snakes/LICENSE "${pkgdir}/usr/share/doc/${pkgname}/LICENSE"
+  	install -Dm 644 ./snakes/LICENSE "${pkgdir}/usr/share/doc/${pkgname}/snakes/LICENSE"
 }

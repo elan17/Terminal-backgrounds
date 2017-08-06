@@ -29,6 +29,6 @@ package() {
 	cd "$srcdir/$pkgname"
   	install -Dm 755 ./snakes/snakes.py "${pkgdir}/usr/bin/snakes-wp"
   	install -Dm 644 ./snakes/LICENSE "${pkgdir}/usr/share/doc/${pkgname}/snakes-wp/LICENSE"
-  	install -Dm 755 ./snakes/game_of_life.py "${pkgdir}/usr/bin/livegame-wp"
-  	install -Dm 644 ./snakes/LICENSE "${pkgdir}/usr/share/doc/${pkgname}/livegame-wp/LICENSE"
+  	install -Dm 755 ./Game\ Of\ Life/game_of_life.py "${pkgdir}/usr/bin/livegame-wp"
+  	install -Dm 644 ./Game\ Of\ Life/LICENSE "${pkgdir}/usr/share/doc/${pkgname}/livegame-wp/LICENSE"
 }

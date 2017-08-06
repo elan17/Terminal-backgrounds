@@ -1,5 +1,14 @@
 #! /usr/bin/env python
 
+"""
+What would happen if we make a mix between Tron and Snake classic games and make all players AI controlled?
+
+Well. This tries to give an answer :)
+
+Author: Juan Toca
+Email: elan17.programacion@gmail.com
+"""
+
 import shutil
 import random
 import curses
@@ -406,7 +415,7 @@ class Handler(Mapa):
         for x in remove:
             self.removing.remove(x)  # And now, he would hit me 'cause a magician never show its tricks
 
-    def gen_head(self, ia=(IA, StickyIA)):
+    def gen_head(self, ia=(IA, )):
         """
         Generates a new head
         :return: VOID

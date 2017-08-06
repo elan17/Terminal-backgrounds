@@ -1,7 +1,7 @@
 
 # Maintainer: Juan Toca <elan17.programacion@gmail.com>
 pkgname=terminal-backgrounds-git
-pkgver=r4.f88e969
+pkgver=r5.811086a
 pkgrel=1
 pkgdesc="Snake-based ZPG game"
 arch=('any')
@@ -27,6 +27,8 @@ pkgver() {
 
 package() {
 	cd "$srcdir/$pkgname"
-  	install -Dm 755 ./snakes/snakes.py "${pkgdir}/usr/bin/snakes"
-  	install -Dm 644 ./snakes/LICENSE "${pkgdir}/usr/share/doc/${pkgname}/snakes/LICENSE"
+  	install -Dm 755 ./snakes/snakes.py "${pkgdir}/usr/bin/snakes-wp"
+  	install -Dm 644 ./snakes/LICENSE "${pkgdir}/usr/share/doc/${pkgname}/snakes-wp/LICENSE"
+  	install -Dm 755 ./snakes/game_of_life.py "${pkgdir}/usr/bin/livegame-wp"
+  	install -Dm 644 ./snakes/LICENSE "${pkgdir}/usr/share/doc/${pkgname}/livegame-wp/LICENSE"
 }

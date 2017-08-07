@@ -1,7 +1,7 @@
 
 # Maintainer: Juan Toca <elan17.programacion@gmail.com>
 pkgname=terminal-backgrounds-git
-pkgver=r5.811086a
+pkgver=r6.a8877fd
 pkgrel=1
 pkgdesc="Snake-based ZPG game"
 arch=('any')

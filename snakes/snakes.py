@@ -326,7 +326,8 @@ class Mapa:
 
 class Handler(Mapa):
     def __init__(self, alto, ancho, colors, percentage=25, clean=True, headlimit=1, max_length=-1,
-                 random_weight=True, crazy_behaviour=False, max_jump=5, body_char="#", head_char="O"):
+                 random_weight=True, crazy_behaviour=False, max_jump=5, body_char="#", head_char="O",
+                 delete_velocity=2):
         """
         Constructor class for Handler
         :param alto: Height
@@ -355,6 +356,8 @@ class Handler(Mapa):
         self.max_length = 0
         self.body_char = body_char
         self.head_char = head_char
+        self.delete_velocity = delete_velocity
+        self.delete = []
 
     def run(self, gen=True):
         """
@@ -363,20 +366,20 @@ class Handler(Mapa):
         :return: Status dictionary
         """
         filled = False
-        delete = []
+        if gen:
+            filled = self.gen_head()  # Gen the heads
         for x in range(0, len(self.heads)):  # Updates the heads
             die = self.heads[x].run(self)
             if die:
                 if not self.heads[x].trigered:
                     self.removing.append(self.heads[x].start_coordinates)
                     # We set that there's a new snake that needs a meatgrinder session
-                delete.append(self.heads[x])
-        for x in delete:
-            self.heads.remove(x)
+                self.delete.append(self.heads[x])
         if self.clear:
             self.clean()  # Do some magic, just don't touch it
-        if gen:
-            filled = self.gen_head()  # Gen the heads
+        for x in self.delete:
+            self.heads.remove(x)
+        self.delete = []
         return self.status(filled)
 
     def status(self, filled):
@@ -405,15 +408,23 @@ class Handler(Mapa):
         """
         remove = []  # We store the coords of the snakes that has been deleted completly
         for x in range(0, len(self.removing)):
-            coords = self.removing[x]
-            tile = self.get_coords(coords)
-            nexts = tile.nextone  # We store the next position of the snake
-            self.removing[x] = nexts
-            if nexts == coords:  # This means that it was the last position so we delete it from erasing list
-                remove.append(coords)
-            self.set_coords(coords, Tile(coords))  # Finally, we clean the tile
+            counter = 0
+            while counter != self.delete_velocity:
+                counter += 1
+                coords = self.removing[x]
+                tile = self.get_coords(coords)
+                nexts = tile.nextone  # We store the next position of the snake
+                self.removing[x] = nexts
+                if type(tile) == Head:
+                    remove.append(coords)
+                    self.delete.append(tile)
+                if nexts == coords:  # This means that it was the last position so we delete it from erasing list
+                    remove.append(coords)
+                    counter = self.delete_velocity
+                self.set_coords(coords, Tile(coords))  # Finally, we clean the tile
         for x in remove:
-            self.removing.remove(x)  # And now, he would hit me 'cause a magician never show its tricks
+            if x in self.removing:
+                self.removing.remove(x)  # And now, he would hit me 'cause a magician never show its tricks
 
     def gen_head(self, ia=(IA, )):
         """
@@ -460,22 +471,23 @@ def options():
             "-o Int: Number of loop to calculate if just calculating\n-e Int: Random seed to be used(String " \
             "if random seed)\n-d Boolean: Shall I reset if the map is filled?" \
             "\n-t Int: If d, How much time shall I wait?\n-h Char: Character to represent the head of the snakes\n" \
-            "-b Char: Character to represent the body of the snakes"
+            "-b Char: Character to represent the body of the snakes\n-v int: Number of tiles to clean per cicle." \
+            "Negative if full clean in one cicle"
     import sys
     import getopt
     true = ["TRUE", "True", "true", "1"]
     returneo = {"clear": True, "percentage": 100, "fps": 10, "max_length": 30, "limit": -1, "random_weighted": True,
                 "crazy": False, "justCalculating": False, "cicles": 6000, "seed": False, "filled": True,
-                "timeout": 10, "head": "O", "body": "#"}
+                "timeout": 10, "head": "O", "body": "#", "clean_velocity": 1}
     argv = sys.argv[1:]
     try:
-        opts, args = getopt.getopt(argv, "c:p:f:l:m:r:z:j:o:e:r:d:t:b:h:", ["help"])
+        opts, args = getopt.getopt(argv, "c:p:f:l:m:r:z:j:o:e:r:d:t:b:h:v:", ["help"])
     except Exception as e:
         print(str(e) + "\n" + ayuda)
         sys.exit()
     opciones = {"c": "clear", "p": "percentage", "f": "fps", "m": "max_length", "l": "limit", "r": "random_weighted",
                 "z": "crazy", "j": "justCalculating", "o": "cicles", "e": "seed", "d": "filled", "t": "timeout",
-                "h": "head", "b": "body"}
+                "h": "head", "b": "body", "v": "clean_velocity"}
     for x in opts:
         flag = x[0].replace("-", "")
         if flag == "help":
@@ -484,7 +496,7 @@ def options():
         option = opciones[flag]
         if option in ("clear", "random_weighted", "crazy", "justCalculating", "filled"):
             returneo[option] = x[1] in true
-        elif option in ("percentage", "fps", "max_length", "limit", "cicles", "timeout"):
+        elif option in ("percentage", "fps", "max_length", "limit", "cicles", "timeout", "clean_velocity"):
             try:
                 returneo[option] = int(x[1])
             except ValueError:
@@ -521,7 +533,7 @@ def main(stdscr, config):  # The root method, do not annoy him
                    percentage=int(config["percentage"]),
                    max_length=int(config["max_length"]), headlimit=int(config["limit"]),
                    random_weight=config["random_weighted"] is True, crazy_behaviour=config["crazy"] is True,
-                   body_char=config["body"], head_char=config["head"])
+                   body_char=config["body"], head_char=config["head"], delete_velocity=config["clean_velocity"])
     # We init the game class, just read
     if config["seed"] is not False:  # We try to set the seed of the random module based on the config
         random.seed(a=int(config["seed"]))

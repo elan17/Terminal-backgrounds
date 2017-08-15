@@ -264,6 +264,58 @@ class StickyIA(IA):
         return possibilities, weighted
 
 
+"""
+TODO
+
+class EvolutionaryIa(IA):
+
+    def __init__(self, mapa, variacion=[(0, 1), (0, -1), (1, 0), (-1, 0)], weight=[1, 1, 1, 1],
+                 random_weight=True, crazy_behaviour=False, max_jump=10, net=None):
+        super().__init__(variacion, weight, random_weight, crazy_behaviour, max_jump)
+        self.net = net
+        self.mapa = mapa
+        from pybrain.tools.shortcuts import buildNetwork
+        self.buildNetwork = buildNetwork
+        if self.net is None:
+            self.gen_net()
+
+    def gen_net(self, depth=10):
+        alto = self.mapa.alto
+        ancho = self.mapa.ancho
+        self.net = self.buildNetwork(alto*ancho+2, depth, len(self.variacion))
+
+    def mutar(self):
+        self.net.mutate()
+
+    def choose(self, mapa, coords):
+        \"\"\"
+        Chooses where the snake should move
+        :param mapa: Game class to use
+        :param coords: Current coordinates
+        :return: Coordinates or False if not valid destination
+        \"\"\"
+        possibilities1 = self.posible_moves(mapa, coords)
+        possibilities = self.modify_weights(possibilities1[0], possibilities1[1], coords)
+        option = False
+        if len(possibilities[0]) > 0:  # If there is a possible tile, we choose a random-weighted possible position
+            option = self.weighted_choice(possibilities[0], possibilities[1])
+        else:
+            self.mutar()
+        return option
+
+    def modify_weights(self, possibilities, weight, coords):
+        input_data = [coords[0], coords[1]]
+        for x in self.mapa.ia_data:
+            input_data.append(x)
+        decision = self.net.activate(input_data)
+        returneo = []
+        for ind in range(len(self.variacion)):
+            x = self.variacion[ind]
+            if (x[0] + coords[0], x[1] + coords[1]) in possibilities:
+                returneo.append(abs(decision[ind]))
+        return possibilities, returneo
+"""
+
 class Mapa:
     def __init__(self, alto, ancho):
         """
@@ -358,12 +410,28 @@ class Handler(Mapa):
         self.head_char = head_char
         self.delete_velocity = delete_velocity
         self.delete = []
+        #self.evolutionary = EvolutionaryIa(random_weight=self.random_weight, crazy_behaviour=self.crazy_behaviour,
+        #                                   max_jump=self.max_jump, mapa=self)
+        #self.ia_data = []
 
     def run(self, gen=True):
         """
         Runs a turn
         :param gen: Shall I generate new snakes?
         :return: Status dictionary
+        """
+        """
+        TODO
+        self.ia_data = []
+        for x in range(self.ancho):
+            for y in range(self.alto):
+                objeto = self.get_coords((x, y))
+                if type(objeto) == Tile:
+                    self.ia_data.append(0)
+                elif type(objeto) == Body:
+                    self.ia_data.append(0.5)
+                else:
+                    self.ia_data.append(1)
         """
         filled = False
         if gen:
@@ -436,7 +504,7 @@ class Handler(Mapa):
         while percentage > 0 and not filled:
             ai = random.choice(ia)
             ai = ai(random_weight=self.random_weight, crazy_behaviour=self.crazy_behaviour,
-                                max_jump=self.max_jump)
+                    max_jump=self.max_jump)
             percentage -= 100
             if random.randint(0, 100) <= self.percentage and len(self.heads) != self.head_limit and not filled:
                 salir = 100000

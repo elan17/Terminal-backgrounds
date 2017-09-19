@@ -31,4 +31,6 @@ package() {
   	install -Dm 644 ./snakes/LICENSE "${pkgdir}/usr/share/doc/${pkgname}/snakes-wp/LICENSE"
   	install -Dm 755 ./Game\ Of\ Life/game_of_life.py "${pkgdir}/usr/bin/livegame-wp"
   	install -Dm 644 ./Game\ Of\ Life/LICENSE "${pkgdir}/usr/share/doc/${pkgname}/livegame-wp/LICENSE"
+  	install -Dm 755 ./maze/maze.py "${pkgdir}/usr/bin/maze-wp"
+  	install -Dm 644 ./maze/LICENSE "${pkgdir}/usr/share/doc/${pkgname}/maze-wp/LICENSE"
 }
